@@ -1,6 +1,8 @@
 # IDE
 .idea/
 *.iml
+.vscode/
+*.code-workspace
 
 # Miscellaneous
 *.class
@@ -11,6 +13,22 @@
 .buildlog/
 .history
 .metadata
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
 
 
 
@@ -103,6 +121,7 @@ unlinked_spec.ds
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
 **/windows/flutter/generated_plugins.cmake
+**/windows/flutter/ephemeral/
 
 # Linux
 **/linux/flutter/generated_plugin_registrant.cc
