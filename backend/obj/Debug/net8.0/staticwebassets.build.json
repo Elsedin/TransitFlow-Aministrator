@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ef9KOsbeSI94D0hqTosL8ydfBZTfDGJvpCoQ5EbfdqQ=",
+  "Source": "TransitFlow.API",
+  "BasePath": "_content/TransitFlow.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
