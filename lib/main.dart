@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'screens/dashboard_screen.dart';
 import 'services/auth_service.dart';
 import 'config/app_config.dart';
 
@@ -60,9 +61,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     if (_isAuthenticated) {
-      return const DashboardScreen();
+      return DashboardScreen();
     }
 
-    return const LoginScreen();
+    return LoginScreen();
   }
 }
