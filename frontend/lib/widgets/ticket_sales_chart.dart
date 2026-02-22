@@ -11,7 +11,26 @@ class TicketSalesChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: Text('No data available'));
+      return Card(
+        elevation: 2,
+        child: Container(
+          height: 250,
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.show_chart, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 8),
+                Text(
+                  'Nema podataka',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     return Card(

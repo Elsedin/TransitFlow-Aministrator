@@ -10,7 +10,25 @@ class TicketTypeChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return const Center(child: Text('No data available'));
+      return Card(
+        elevation: 2,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.pie_chart, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 8),
+                Text(
+                  'Nema podataka',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     final total = data.fold<int>(0, (sum, item) => sum + item.count);

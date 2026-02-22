@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TransitFlow.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+135fb74d8fc1326bf622bc2972e547f7c0049f34")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+075d54a52239b771e2c29993ffbfde4240ee3cbf")]
 [assembly: System.Reflection.AssemblyProductAttribute("TransitFlow.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TransitFlow.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

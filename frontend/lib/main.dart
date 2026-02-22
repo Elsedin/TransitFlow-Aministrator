@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/main_screen.dart';
 import 'services/auth_service.dart';
 import 'config/app_config.dart';
 
@@ -31,7 +31,7 @@ class AuthWrapper extends StatefulWidget {
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends State<AuthWrapper> with WidgetsBindingObserver {
   final _authService = AuthService();
   bool _isChecking = true;
   bool _isAuthenticated = false;
@@ -39,7 +39,27 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
-    _checkAuth();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
+    await _authService.logout();
+    await Future.delayed(const Duration(milliseconds: 100));
+    await _checkAuth();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached || state == AppLifecycleState.paused) {
+      _authService.logout();
+    }
   }
 
   Future<void> _checkAuth() async {
@@ -61,9 +81,13 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     if (_isAuthenticated) {
-      return DashboardScreen();
+      return const MainScreen();
     }
 
-    return LoginScreen();
+    return LoginScreen(
+      onLoginSuccess: () {
+        _checkAuth();
+      },
+    );
   }
 }

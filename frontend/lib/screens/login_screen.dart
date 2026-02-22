@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../config/app_config.dart';
-import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final VoidCallback? onLoginSuccess;
+  
+  const LoginScreen({super.key, this.onLoginSuccess});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -47,9 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (authResponse != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const DashboardScreen()),
-      );
+      widget.onLoginSuccess?.call();
     } else {
       setState(() {
         _errorMessage = 'Invalid username or password';

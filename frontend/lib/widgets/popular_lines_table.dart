@@ -15,7 +15,29 @@ class PopularLinesTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (lines.isEmpty) {
-      return const Center(child: Text('No data available'));
+      return Card(
+        elevation: 2,
+        color: Colors.grey[100],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(32.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.table_chart, size: 48, color: Colors.grey[400]),
+                const SizedBox(height: 8),
+                Text(
+                  'Nema podataka',
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     return Card(
