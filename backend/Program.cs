@@ -80,6 +80,7 @@ builder.Services.AddScoped<ITransportLineService, TransportLineService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<ITicketPriceService, TicketPriceService>();
 
 builder.Services.AddCors(options =>
 {
