@@ -79,6 +79,7 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ITransportLineService, TransportLineService>();
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 builder.Services.AddCors(options =>
 {

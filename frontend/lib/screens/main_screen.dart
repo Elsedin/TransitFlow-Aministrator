@@ -4,6 +4,7 @@ import 'dashboard_screen.dart';
 import 'transport_lines_screen.dart';
 import 'routes_screen.dart';
 import 'vehicles_screen.dart';
+import 'schedules_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -31,6 +32,8 @@ class _MainScreenState extends State<MainScreen> {
         return const RoutesScreen();
       case '/vehicles':
         return const VehiclesScreen();
+      case '/schedule':
+        return const SchedulesScreen();
       default:
         return const DashboardScreen();
     }
