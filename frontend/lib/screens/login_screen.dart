@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
       widget.onLoginSuccess?.call();
     } else {
       setState(() {
-        _errorMessage = 'Invalid username or password';
+        _errorMessage = 'Neispravno korisničko ime ili lozinka';
       });
     }
   }
@@ -86,14 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Korisničko ime',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(),
                     ),
                     textInputAction: TextInputAction.next,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your username';
+                        return 'Molimo unesite korisničko ime';
                       }
                       return null;
                     },
@@ -102,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _passwordController,
                     decoration: const InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Lozinka',
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(),
                     ),
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onFieldSubmitted: (_) => _handleLogin(),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return 'Molimo unesite lozinku';
                       }
                       return null;
                     },
@@ -155,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 20,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Text('Login'),
+                        : const Text('Prijava'),
                   ),
                 ],
               ),

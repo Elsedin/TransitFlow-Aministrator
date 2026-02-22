@@ -204,13 +204,13 @@ public class ScheduleService : IScheduleService
     {
         return dayOfWeek switch
         {
-            DayOfWeek.Monday => "Ponedeljak",
+            DayOfWeek.Monday => "Ponedjeljak",
             DayOfWeek.Tuesday => "Utorak",
             DayOfWeek.Wednesday => "Srijeda",
             DayOfWeek.Thursday => "Četvrtak",
             DayOfWeek.Friday => "Petak",
             DayOfWeek.Saturday => "Subota",
-            DayOfWeek.Sunday => "Nedelja",
+            DayOfWeek.Sunday => "Nedjelja",
             _ => dayOfWeek.ToString()
         };
     }

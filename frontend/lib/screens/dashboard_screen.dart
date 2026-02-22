@@ -42,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load dashboard metrics';
+        _errorMessage = 'Neuspješno učitavanje metrika';
         _isLoading = false;
       });
     }
@@ -72,13 +72,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadMetrics,
-                              child: const Text('Retry'),
+                              child: const Text('Pokušaj ponovo'),
                             ),
                           ],
                         ),
                       )
                     : _metrics == null
-                        ? const Center(child: Text('No data available'))
+                        ? const Center(child: Text('Nema dostupnih podataka'))
                         : SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,

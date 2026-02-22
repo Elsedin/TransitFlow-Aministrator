@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import '../services/ticket_service.dart';
 import '../services/ticket_type_service.dart';
+import '../services/export_service.dart';
 import '../models/ticket_model.dart';
 import '../models/ticket_type_model.dart';
 import '../widgets/metric_card_enhanced.dart';
@@ -123,13 +125,93 @@ class _TicketsScreenState extends State<TicketsScreen> {
                 ),
               ),
               ElevatedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Export funkcionalnost će biti dodata')),
+                onPressed: () async {
+                  if (!mounted) return;
+                  final scaffoldMessenger = ScaffoldMessenger.of(context);
+                  
+                  final RenderBox? button = context.findRenderObject() as RenderBox?;
+                  final RenderBox? overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+                  
+                  if (button == null || overlay == null) return;
+                  
+                  final RelativeRect position = RelativeRect.fromRect(
+                    Rect.fromPoints(
+                      button.localToGlobal(Offset.zero, ancestor: overlay),
+                      button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                    ),
+                    Offset.zero & overlay.size,
                   );
+                  
+                  final String? value = await showMenu<String>(
+                    context: context,
+                    position: position,
+                    items: [
+                      const PopupMenuItem<String>(
+                        value: 'excel',
+                        child: Row(
+                          children: [
+                            Icon(Icons.table_chart, color: Colors.green),
+                            SizedBox(width: 8),
+                            Text('Izvezi u Excel'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'csv',
+                        child: Row(
+                          children: [
+                            Icon(Icons.description, color: Colors.blue),
+                            SizedBox(width: 8),
+                            Text('Izvezi u CSV'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'pdf',
+                        child: Row(
+                          children: [
+                            Icon(Icons.picture_as_pdf, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Izvezi u PDF'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                  
+                  if (value == null || !mounted) return;
+                  
+                  try {
+                    String? path;
+                    if (value == 'excel') {
+                      path = await ExportService.exportTicketsToExcel(_filteredTickets);
+                    } else if (value == 'csv') {
+                      path = await ExportService.exportTicketsToCSV(_filteredTickets);
+                    } else if (value == 'pdf') {
+                      path = await ExportService.exportTicketsToPDF(_filteredTickets);
+                    }
+
+                    if (path != null && mounted) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(
+                          content: Text('Fajl je uspješno sačuvan: $path'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      scaffoldMessenger.showSnackBar(
+                        SnackBar(
+                          content: Text('Greška pri izvozu: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
                 },
                 icon: const Icon(Icons.file_download),
-                label: const Text('Izvezi u Excel'),
+                label: const Text('Izvezi'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
                   foregroundColor: Colors.white,
