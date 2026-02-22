@@ -85,6 +85,12 @@ class Sidebar extends StatelessWidget {
                   currentRoute == '/users',
                 ),
                 _buildMenuItem(
+                  'Karte',
+                  Icons.confirmation_number,
+                  '/tickets',
+                  currentRoute == '/tickets',
+                ),
+                _buildMenuItem(
                   'Transakcije',
                   Icons.receipt_long,
                   '/transactions',

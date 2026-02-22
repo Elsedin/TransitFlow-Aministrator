@@ -26,7 +26,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
   int? _dayOfWeekFilter;
   bool? _statusFilter;
   int _currentPage = 0;
-  final int _itemsPerPage = 10;
+  final int _itemsPerPage = 5;
 
   @override
   void initState() {

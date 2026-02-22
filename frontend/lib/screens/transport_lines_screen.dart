@@ -22,7 +22,7 @@ class _TransportLinesScreenState extends State<TransportLinesScreen> {
   String _searchQuery = '';
   bool? _statusFilter;
   int _currentPage = 0;
-  final int _itemsPerPage = 10;
+  final int _itemsPerPage = 5;
 
   @override
   void initState() {
