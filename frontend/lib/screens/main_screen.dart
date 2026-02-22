@@ -9,6 +9,7 @@ import 'ticket_prices_screen.dart';
 import 'tickets_screen.dart';
 import 'users_screen.dart';
 import 'transactions_screen.dart';
+import 'subscriptions_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -46,6 +47,8 @@ class _MainScreenState extends State<MainScreen> {
         return const UsersScreen();
       case '/transactions':
         return const TransactionsScreen();
+      case '/subscriptions':
+        return const SubscriptionsScreen();
       default:
         return const DashboardScreen();
     }

@@ -96,6 +96,12 @@ class Sidebar extends StatelessWidget {
                   '/transactions',
                   currentRoute == '/transactions',
                 ),
+                _buildMenuItem(
+                  'Pretplate',
+                  Icons.subscriptions,
+                  '/subscriptions',
+                  currentRoute == '/subscriptions',
+                ),
                 const SizedBox(height: 24),
                 _buildSectionTitle('IZVJEŠTAJI'),
                 _buildMenuItem(
