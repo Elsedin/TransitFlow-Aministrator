@@ -11,6 +11,7 @@ import 'users_screen.dart';
 import 'transactions_screen.dart';
 import 'subscriptions_screen.dart';
 import 'reports_screen.dart';
+import 'reference_data_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -52,6 +53,8 @@ class _MainScreenState extends State<MainScreen> {
         return const SubscriptionsScreen();
       case '/reports':
         return const ReportsScreen();
+      case '/reference-data':
+        return const ReferenceDataScreen();
       default:
         return const DashboardScreen();
     }

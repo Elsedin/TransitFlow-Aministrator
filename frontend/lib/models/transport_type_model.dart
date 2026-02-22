@@ -1,59 +1,51 @@
-class TicketType {
+class TransportType {
   final int id;
   final String name;
   final String? description;
-  final int validityDays;
   final bool isActive;
 
-  TicketType({
+  TransportType({
     required this.id,
     required this.name,
     this.description,
-    required this.validityDays,
     required this.isActive,
   });
 
-  factory TicketType.fromJson(Map<String, dynamic> json) {
-    return TicketType(
+  factory TransportType.fromJson(Map<String, dynamic> json) {
+    return TransportType(
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
-      validityDays: json['validityDays'] as int,
-      isActive: json['isActive'] as bool,
+      isActive: json['isActive'] as bool? ?? true,
     );
   }
 }
 
-class CreateTicketTypeRequest {
+class CreateTransportTypeRequest {
   final String name;
   final String? description;
-  final int validityDays;
 
-  CreateTicketTypeRequest({
+  CreateTransportTypeRequest({
     required this.name,
     this.description,
-    required this.validityDays,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
       if (description != null) 'description': description,
-      'validityDays': validityDays,
     };
   }
 }
 
-class UpdateTicketTypeRequest {
+class UpdateTransportTypeRequest {
   final String name;
   final String? description;
-  final int validityDays;
   final bool isActive;
 
-  UpdateTicketTypeRequest({
+  UpdateTransportTypeRequest({
     required this.name,
     this.description,
-    required this.validityDays,
     required this.isActive,
   });
 
@@ -61,7 +53,6 @@ class UpdateTicketTypeRequest {
     return {
       'name': name,
       if (description != null) 'description': description,
-      'validityDays': validityDays,
       'isActive': isActive,
     };
   }

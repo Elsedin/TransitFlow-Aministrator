@@ -133,12 +133,14 @@ class Zone {
   final int id;
   final String name;
   final String? description;
+  final int stationCount;
   final bool isActive;
 
   Zone({
     required this.id,
     required this.name,
     this.description,
+    required this.stationCount,
     required this.isActive,
   });
 
@@ -147,7 +149,88 @@ class Zone {
       id: json['id'] as int,
       name: json['name'] as String,
       description: json['description'] as String?,
+      stationCount: json['stationCount'] as int? ?? 0,
       isActive: json['isActive'] as bool,
     );
+  }
+}
+
+class CreateZoneRequest {
+  final String name;
+  final String? description;
+
+  CreateZoneRequest({
+    required this.name,
+    this.description,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      if (description != null) 'description': description,
+    };
+  }
+}
+
+class UpdateZoneRequest {
+  final String name;
+  final String? description;
+  final bool isActive;
+
+  UpdateZoneRequest({
+    required this.name,
+    this.description,
+    required this.isActive,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      if (description != null) 'description': description,
+      'isActive': isActive,
+    };
+  }
+}
+
+class CreateCityRequest {
+  final String name;
+  final String? postalCode;
+  final int? countryId;
+
+  CreateCityRequest({
+    required this.name,
+    this.postalCode,
+    this.countryId,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      if (postalCode != null) 'postalCode': postalCode,
+      if (countryId != null) 'countryId': countryId,
+    };
+  }
+}
+
+class UpdateCityRequest {
+  final String name;
+  final String? postalCode;
+  final int? countryId;
+  final bool isActive;
+
+  UpdateCityRequest({
+    required this.name,
+    this.postalCode,
+    this.countryId,
+    required this.isActive,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      if (postalCode != null) 'postalCode': postalCode,
+      if (countryId != null) 'countryId': countryId,
+      'isActive': isActive,
+    };
   }
 }
