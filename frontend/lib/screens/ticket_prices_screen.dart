@@ -26,7 +26,7 @@ class _TicketPricesScreenState extends State<TicketPricesScreen> {
   int? _zoneFilter;
   bool? _statusFilter;
   int _currentPage = 0;
-  final int _itemsPerPage = 10;
+  final int _itemsPerPage = 5;
 
   @override
   void initState() {
