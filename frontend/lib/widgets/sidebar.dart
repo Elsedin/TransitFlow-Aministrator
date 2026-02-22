@@ -116,6 +116,12 @@ class Sidebar extends StatelessWidget {
                   '/reports',
                   currentRoute == '/reports',
                 ),
+                _buildMenuItem(
+                  'Notifikacije',
+                  Icons.notifications,
+                  '/notifications',
+                  currentRoute == '/notifications',
+                ),
               ],
             ),
           ),
