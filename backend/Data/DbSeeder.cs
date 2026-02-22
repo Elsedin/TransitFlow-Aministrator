@@ -36,6 +36,29 @@ public static class DbSeeder
             Console.WriteLine($"[DbSeeder] Admin user already exists. Password hash: {existingAdmin.PasswordHash}");
         }
 
+        var existingDesktop = await context.Administrators
+            .FirstOrDefaultAsync(a => a.Username == "desktop");
+        
+        if (existingDesktop == null)
+        {
+            var desktopPasswordHash = AuthService.HashPassword("test");
+            
+            var desktop = new Administrator
+            {
+                Username = "desktop",
+                Email = "desktop@transitflow.com",
+                PasswordHash = desktopPasswordHash,
+                FirstName = "Desktop",
+                LastName = "User",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Administrators.Add(desktop);
+            await context.SaveChangesAsync();
+            Console.WriteLine("[DbSeeder] Desktop user created successfully!");
+        }
+
         if (!context.Countries.Any())
         {
             var country = new Country
