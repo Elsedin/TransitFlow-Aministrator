@@ -7,6 +7,7 @@ import 'vehicles_screen.dart';
 import 'schedules_screen.dart';
 import 'ticket_prices_screen.dart';
 import 'tickets_screen.dart';
+import 'users_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -40,6 +41,8 @@ class _MainScreenState extends State<MainScreen> {
         return const TicketPricesScreen();
       case '/tickets':
         return const TicketsScreen();
+      case '/users':
+        return const UsersScreen();
       default:
         return const DashboardScreen();
     }
