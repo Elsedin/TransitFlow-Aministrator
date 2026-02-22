@@ -49,7 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   String _formatCurrency(double amount) {
-    return NumberFormat.currency(symbol: 'KM', decimalDigits: 0).format(amount);
+    return '${NumberFormat('#,###').format(amount)} KM';
   }
 
   @override
