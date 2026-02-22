@@ -8,8 +8,8 @@ class PopularLinesTable extends StatelessWidget {
   const PopularLinesTable({super.key, required this.lines});
 
   String _formatCurrency(double amount) {
-    final formatter = NumberFormat('#,###', 'en_US');
-    return 'KM${formatter.format(amount)}';
+    final formatter = NumberFormat('#,##0.00', 'en_US');
+    return '${formatter.format(amount)} KM';
   }
 
   @override
