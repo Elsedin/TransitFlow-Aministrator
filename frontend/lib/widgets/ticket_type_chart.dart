@@ -50,8 +50,8 @@ class TicketTypeChart extends StatelessWidget {
             const SizedBox(height: 16),
             Center(
               child: SizedBox(
-                width: 160,
-                height: 160,
+                width: 130,
+                height: 130,
                 child: PieChart(
                   PieChartData(
                     sections: data.map((item) {
@@ -60,7 +60,7 @@ class TicketTypeChart extends StatelessWidget {
                         value: item.count.toDouble(),
                         title: percentage > 5 ? '${percentage.toStringAsFixed(1)}%' : '',
                         color: item.color,
-                        radius: 64,
+                        radius: 50,
                         titleStyle: const TextStyle(
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
@@ -69,12 +69,12 @@ class TicketTypeChart extends StatelessWidget {
                       );
                     }).toList(),
                     sectionsSpace: 2,
-                    centerSpaceRadius: 48,
+                    centerSpaceRadius: 38,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 20),
             Wrap(
               spacing: 16,
               runSpacing: 12,

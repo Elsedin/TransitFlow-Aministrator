@@ -76,6 +76,12 @@ class Sidebar extends StatelessWidget {
                   '/prices',
                   currentRoute == '/prices',
                 ),
+                _buildMenuItem(
+                  'Referentni podaci',
+                  Icons.description,
+                  '/reference-data',
+                  currentRoute == '/reference-data',
+                ),
                 const SizedBox(height: 24),
                 _buildSectionTitle('KORISNICI I TRANSAKCIJE'),
                 _buildMenuItem(
