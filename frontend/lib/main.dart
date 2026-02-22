@@ -43,19 +43,11 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkAuth() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    
+    final authenticated = await _authService.isAuthenticated();
     setState(() {
-      _isAuthenticated = true;
+      _isAuthenticated = authenticated;
       _isChecking = false;
     });
-    
-    // TODO: Kada kreiraš backend API, ukloni gornje linije i vrati originalni kod:
-    // final authenticated = await _authService.isAuthenticated();
-    // setState(() {
-    //   _isAuthenticated = authenticated;
-    //   _isChecking = false;
-    // });
   }
 
   @override

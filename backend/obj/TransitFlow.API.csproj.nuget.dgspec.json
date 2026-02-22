@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow.API\\TransitFlow.API.csproj": {}
+    "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow-Aministrator\\backend\\TransitFlow.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow.API\\TransitFlow.API.csproj": {
+    "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow-Aministrator\\backend\\TransitFlow.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow.API\\TransitFlow.API.csproj",
+        "projectUniqueName": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow-Aministrator\\backend\\TransitFlow.API.csproj",
         "projectName": "TransitFlow.API",
-        "projectPath": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow.API\\TransitFlow.API.csproj",
+        "projectPath": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow-Aministrator\\backend\\TransitFlow.API.csproj",
         "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow.API\\obj\\",
+        "outputPath": "C:\\Users\\Korisnik\\Desktop\\RSII-Administrator\\TransitFlow-Aministrator\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

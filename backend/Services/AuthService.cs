@@ -27,11 +27,21 @@ public class AuthService : IAuthService
 
         if (admin == null)
         {
+            Console.WriteLine($"[AuthService] Admin not found: {request.Username}");
             return null;
         }
 
+        Console.WriteLine($"[AuthService] Admin found: {admin.Username}");
+        Console.WriteLine($"[AuthService] Stored hash: {admin.PasswordHash}");
+        Console.WriteLine($"[AuthService] Password length: {request.Password.Length}");
+        
+        var computedHash = HashPassword(request.Password);
+        Console.WriteLine($"[AuthService] Computed hash: {computedHash}");
+        Console.WriteLine($"[AuthService] Hashes match: {computedHash == admin.PasswordHash}");
+
         if (!VerifyPassword(request.Password, admin.PasswordHash))
         {
+            Console.WriteLine($"[AuthService] Password verification failed");
             return null;
         }
 
@@ -82,10 +92,19 @@ public class AuthService : IAuthService
 
     private static bool VerifyPassword(string password, string passwordHash)
     {
+        if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passwordHash))
+        {
+            return false;
+        }
+        
         using var sha256 = SHA256.Create();
         var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
         var hashedPassword = Convert.ToBase64String(hashedBytes);
-        return hashedPassword == passwordHash;
+        
+        var trimmedStored = passwordHash.Trim();
+        var trimmedComputed = hashedPassword.Trim();
+        
+        return trimmedComputed == trimmedStored;
     }
 
     public static string HashPassword(string password)

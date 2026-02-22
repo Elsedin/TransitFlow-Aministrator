@@ -10,14 +10,21 @@ class AuthService {
 
   Future<AuthResponse?> login(String username, String password) async {
     try {
+      final url = '${AppConfig.apiBaseUrl}/auth/login';
+      print('[AuthService] Login URL: $url');
+      print('[AuthService] Username: $username');
+      
       final response = await http.post(
-        Uri.parse('${AppConfig.apiBaseUrl}/auth/login'),
+        Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(AuthModel(
           username: username,
           password: password,
         ).toJson()),
       );
+
+      print('[AuthService] Response status: ${response.statusCode}');
+      print('[AuthService] Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -26,9 +33,11 @@ class AuthService {
         await _saveAuthData(authResponse);
         return authResponse;
       } else {
+        print('[AuthService] Login failed with status: ${response.statusCode}');
         return null;
       }
     } catch (e) {
+      print('[AuthService] Login error: $e');
       return null;
     }
   }
