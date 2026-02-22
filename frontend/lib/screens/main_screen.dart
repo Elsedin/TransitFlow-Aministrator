@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
 import 'dashboard_screen.dart';
 import 'transport_lines_screen.dart';
+import 'routes_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -25,6 +26,8 @@ class _MainScreenState extends State<MainScreen> {
         return const DashboardScreen();
       case '/lines':
         return const TransportLinesScreen();
+      case '/routes':
+        return const RoutesScreen();
       default:
         return const DashboardScreen();
     }

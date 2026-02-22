@@ -20,14 +20,14 @@ public class DashboardService : IDashboardService
         var totalRevenue = await _context.Transactions
             .Where(t => t.Status == "Completed")
             .SumAsync(t => (decimal?)t.Amount) ?? 0;
-        var activeRoutes = await _context.Routes.CountAsync(r => r.IsActive);
+        var activeTransportLines = await _context.TransportLines.CountAsync(tl => tl.IsActive);
 
         return new DashboardMetricsDto
         {
             TotalUsers = totalUsers,
             TotalTicketsSold = totalTicketsSold,
             TotalRevenue = totalRevenue,
-            ActiveRoutes = activeRoutes
+            ActiveRoutes = activeTransportLines
         };
     }
 
