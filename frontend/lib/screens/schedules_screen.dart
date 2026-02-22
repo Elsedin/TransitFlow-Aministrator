@@ -306,13 +306,13 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                       icon: const Icon(Icons.filter_list),
                       items: const [
                         DropdownMenuItem<int?>(value: null, child: Text('Svi dani')),
-                        DropdownMenuItem<int?>(value: 1, child: Text('Ponedeljak')),
+                        DropdownMenuItem<int?>(value: 1, child: Text('Ponedjeljak')),
                         DropdownMenuItem<int?>(value: 2, child: Text('Utorak')),
                         DropdownMenuItem<int?>(value: 3, child: Text('Srijeda')),
                         DropdownMenuItem<int?>(value: 4, child: Text('Četvrtak')),
                         DropdownMenuItem<int?>(value: 5, child: Text('Petak')),
                         DropdownMenuItem<int?>(value: 6, child: Text('Subota')),
-                        DropdownMenuItem<int?>(value: 0, child: Text('Nedelja')),
+                        DropdownMenuItem<int?>(value: 0, child: Text('Nedjelja')),
                       ],
                       onChanged: (value) {
                         setState(() {
@@ -399,9 +399,9 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
               _TableHeaderCell('ID'),
               _TableHeaderCell('Ruta'),
               _TableHeaderCell('Vozilo'),
-              _TableHeaderCell('Vreme polaska'),
-              _TableHeaderCell('Vreme dolaska'),
-              _TableHeaderCell('Dan u nedelji'),
+              _TableHeaderCell('Vrijeme polaska'),
+              _TableHeaderCell('Vrijeme dolaska'),
+              _TableHeaderCell('Dan u nedjelji'),
               _TableHeaderCell('Status'),
               _TableHeaderCell('Akcije'),
             ],
@@ -786,14 +786,14 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
                         onTap: () => _selectTime(context, true),
                         child: InputDecorator(
                           decoration: const InputDecoration(
-                            labelText: 'Vreme polaska',
+                            labelText: 'Vrijeme polaska',
                             border: OutlineInputBorder(),
                             suffixIcon: Icon(Icons.access_time),
                           ),
                           child: Text(
                             _departureTime != null
                                 ? '${_departureTime!.hour.toString().padLeft(2, '0')}:${_departureTime!.minute.toString().padLeft(2, '0')}'
-                                : 'Odaberite vreme',
+                                : 'Odaberite vrijeme',
                           ),
                         ),
                       ),
@@ -804,14 +804,14 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
                         onTap: () => _selectTime(context, false),
                         child: InputDecorator(
                           decoration: const InputDecoration(
-                            labelText: 'Vreme dolaska',
+                            labelText: 'Vrijeme dolaska',
                             border: OutlineInputBorder(),
                             suffixIcon: Icon(Icons.access_time),
                           ),
                           child: Text(
                             _arrivalTime != null
                                 ? '${_arrivalTime!.hour.toString().padLeft(2, '0')}:${_arrivalTime!.minute.toString().padLeft(2, '0')}'
-                                : 'Odaberite vreme',
+                                : 'Odaberite vrijeme',
                           ),
                         ),
                       ),
@@ -822,17 +822,17 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
                 DropdownButtonFormField<int>(
                   value: _selectedDayOfWeek,
                   decoration: const InputDecoration(
-                    labelText: 'Dan u nedelji',
+                    labelText: 'Dan u nedjelji',
                     border: OutlineInputBorder(),
                   ),
                   items: const [
-                    DropdownMenuItem<int>(value: 1, child: Text('Ponedeljak')),
+                    DropdownMenuItem<int>(value: 1, child: Text('Ponedjeljak')),
                     DropdownMenuItem<int>(value: 2, child: Text('Utorak')),
                     DropdownMenuItem<int>(value: 3, child: Text('Srijeda')),
                     DropdownMenuItem<int>(value: 4, child: Text('Četvrtak')),
                     DropdownMenuItem<int>(value: 5, child: Text('Petak')),
                     DropdownMenuItem<int>(value: 6, child: Text('Subota')),
-                    DropdownMenuItem<int>(value: 0, child: Text('Nedelja')),
+                    DropdownMenuItem<int>(value: 0, child: Text('Nedjelja')),
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -841,7 +841,7 @@ class _ScheduleDialogState extends State<_ScheduleDialog> {
                   },
                   validator: (value) {
                     if (value == null) {
-                      return 'Molimo odaberite dan u nedelji';
+                      return 'Molimo odaberite dan u nedjelji';
                     }
                     return null;
                   },
