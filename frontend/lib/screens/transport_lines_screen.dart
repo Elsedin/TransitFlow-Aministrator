@@ -202,21 +202,32 @@ class _TransportLinesScreenState extends State<TransportLinesScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      DropdownButton<bool?>(
-                        value: _statusFilter,
-                        hint: const Text('Sve linije'),
-                        items: const [
-                          DropdownMenuItem<bool?>(value: null, child: Text('Sve linije')),
-                          DropdownMenuItem<bool?>(value: true, child: Text('Aktivne')),
-                          DropdownMenuItem<bool?>(value: false, child: Text('Neaktivne')),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _statusFilter = value;
-                          });
-                          _applyFilters();
-                        },
-                        style: const TextStyle(fontSize: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey[400]!),
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                        ),
+                        child: DropdownButton<bool?>(
+                          value: _statusFilter,
+                          hint: const Text('Sve linije'),
+                          items: const [
+                            DropdownMenuItem<bool?>(value: null, child: Text('Sve linije')),
+                            DropdownMenuItem<bool?>(value: true, child: Text('Aktivne')),
+                            DropdownMenuItem<bool?>(value: false, child: Text('Neaktivne')),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _statusFilter = value;
+                            });
+                            _applyFilters();
+                          },
+                          style: const TextStyle(fontSize: 16, color: Colors.black87),
+                          underline: const SizedBox(),
+                          isExpanded: false,
+                          icon: Icon(Icons.filter_list, color: Colors.grey[700]),
+                        ),
                       ),
                     ],
                   ),
