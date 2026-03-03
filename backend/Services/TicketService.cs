@@ -19,7 +19,8 @@ public class TicketService : ITicketService
         string? status = null,
         int? ticketTypeId = null,
         DateTime? dateFrom = null,
-        DateTime? dateTo = null)
+        DateTime? dateTo = null,
+        int? userId = null)
     {
         var now = DateTime.UtcNow;
         var query = _context.Tickets
@@ -28,7 +29,13 @@ public class TicketService : ITicketService
             .Include(t => t.Route)
                 .ThenInclude(r => r!.TransportLine)
             .Include(t => t.Zone)
+            .Include(t => t.Transaction)
             .AsQueryable();
+
+        if (userId.HasValue)
+        {
+            query = query.Where(t => t.UserId == userId.Value);
+        }
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -91,7 +98,8 @@ public class TicketService : ITicketService
             IsUsed = t.IsUsed,
             UsedAt = t.UsedAt,
             Status = GetTicketStatus(t, now),
-            IsActive = !t.IsUsed && t.ValidTo >= now
+            IsActive = !t.IsUsed && t.ValidTo >= now,
+            PaymentMethod = t.Transaction?.PaymentMethod
         }).ToList();
     }
 
@@ -103,6 +111,7 @@ public class TicketService : ITicketService
             .Include(t => t.Route)
                 .ThenInclude(r => r!.TransportLine)
             .Include(t => t.Zone)
+            .Include(t => t.Transaction)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (ticket == null)
@@ -132,7 +141,8 @@ public class TicketService : ITicketService
             IsUsed = ticket.IsUsed,
             UsedAt = ticket.UsedAt,
             Status = GetTicketStatus(ticket, now),
-            IsActive = !ticket.IsUsed && ticket.ValidTo >= now
+            IsActive = !ticket.IsUsed && ticket.ValidTo >= now,
+            PaymentMethod = ticket.Transaction?.PaymentMethod
         };
     }
 
@@ -157,6 +167,122 @@ public class TicketService : ITicketService
             UsedTicketsThisMonth = usedTicketsThisMonth,
             ExpiredTicketsLast7Days = expiredTicketsLast7Days
         };
+    }
+
+    public async Task<TicketDto> PurchaseAsync(PurchaseTicketDto dto, int userId)
+    {
+        var ticketType = await _context.TicketTypes.FindAsync(dto.TicketTypeId);
+        if (ticketType == null)
+        {
+            throw new InvalidOperationException("Ticket type not found");
+        }
+
+        var route = await _context.Routes.FindAsync(dto.RouteId);
+        if (route == null)
+        {
+            throw new InvalidOperationException("Route not found");
+        }
+
+        var zone = await _context.Zones.FindAsync(dto.ZoneId);
+        if (zone == null)
+        {
+            throw new InvalidOperationException("Zone not found");
+        }
+
+        var ticketValidFrom = dto.ValidFrom.ToUniversalTime();
+        var ticketValidFromDate = ticketValidFrom.Date;
+        
+        var allPrices = await _context.TicketPrices
+            .Where(tp => tp.TicketTypeId == dto.TicketTypeId 
+                && tp.ZoneId == dto.ZoneId 
+                && tp.IsActive)
+            .ToListAsync();
+        
+        var ticketPrice = allPrices
+            .Where(tp => 
+            {
+                var priceValidFrom = tp.ValidFrom.Kind == DateTimeKind.Unspecified 
+                    ? DateTime.SpecifyKind(tp.ValidFrom, DateTimeKind.Utc) 
+                    : tp.ValidFrom.ToUniversalTime();
+                var priceValidFromDate = priceValidFrom.Date;
+                
+                if (priceValidFromDate > ticketValidFromDate)
+                    return false;
+                
+                if (tp.ValidTo.HasValue)
+                {
+                    var priceValidTo = tp.ValidTo.Value.Kind == DateTimeKind.Unspecified 
+                        ? DateTime.SpecifyKind(tp.ValidTo.Value, DateTimeKind.Utc) 
+                        : tp.ValidTo.Value.ToUniversalTime();
+                    var priceValidToDate = priceValidTo.Date;
+                    
+                    if (priceValidToDate < ticketValidFromDate)
+                        return false;
+                }
+                
+                return true;
+            })
+            .OrderByDescending(tp => tp.ValidFrom)
+            .FirstOrDefault();
+
+        if (ticketPrice == null)
+        {
+            var allPricesForCombination = await _context.TicketPrices
+                .Where(tp => tp.TicketTypeId == dto.TicketTypeId && tp.ZoneId == dto.ZoneId)
+                .Select(tp => new { 
+                    tp.Id, 
+                    tp.IsActive, 
+                    tp.ValidFrom, 
+                    tp.ValidTo,
+                    tp.Price 
+                })
+                .ToListAsync();
+            
+            var errorDetails = $"TicketTypeId: {dto.TicketTypeId}, ZoneId: {dto.ZoneId}, " +
+                              $"ValidFrom: {ticketValidFrom:yyyy-MM-dd HH:mm:ss} UTC. " +
+                              $"Found {allPricesForCombination.Count} price(s) for this combination. " +
+                              $"Active: {allPricesForCombination.Count(p => p.IsActive)}. " +
+                              $"Details: {string.Join("; ", allPricesForCombination.Select(p => $"Id={p.Id}, Active={p.IsActive}, ValidFrom={p.ValidFrom:yyyy-MM-dd}, ValidTo={p.ValidTo?.ToString("yyyy-MM-dd") ?? "null"}"))}";
+            
+            throw new InvalidOperationException($"Ticket price not found for the selected ticket type and zone. {errorDetails}");
+        }
+
+        var now = DateTime.UtcNow;
+        var hasActiveSubscription = await _context.Subscriptions
+            .AnyAsync(s => s.UserId == userId 
+                && s.Status.ToLower() == "active" 
+                && s.StartDate <= now 
+                && s.EndDate >= now);
+
+        var ticketNumber = GenerateTicketNumber();
+
+        var ticket = new Ticket
+        {
+            TicketNumber = ticketNumber,
+            UserId = userId,
+            TicketTypeId = dto.TicketTypeId,
+            RouteId = dto.RouteId,
+            ZoneId = dto.ZoneId,
+            Price = hasActiveSubscription ? 0 : ticketPrice.Price,
+            ValidFrom = dto.ValidFrom,
+            ValidTo = dto.ValidTo,
+            PurchasedAt = DateTime.UtcNow,
+            IsUsed = false,
+            TransactionId = hasActiveSubscription ? null : dto.TransactionId
+        };
+
+        _context.Tickets.Add(ticket);
+        await _context.SaveChangesAsync();
+
+        return await GetByIdAsync(ticket.Id) ?? throw new Exception("Failed to retrieve created ticket");
+    }
+
+    private static string GenerateTicketNumber()
+    {
+        var year = DateTime.UtcNow.Year;
+        var random = new Random();
+        var number = random.Next(100000, 999999);
+        return $"TKT-{year}-{number:D6}";
     }
 
     private static string GetTicketStatus(Ticket ticket, DateTime now)

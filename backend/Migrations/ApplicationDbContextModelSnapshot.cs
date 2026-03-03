@@ -140,6 +140,33 @@ namespace TransitFlow.API.Migrations
                     b.ToTable("Countries");
                 });
 
+            modelBuilder.Entity("TransitFlow.API.Models.FavoriteLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TransportLineId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransportLineId");
+
+                    b.HasIndex("UserId", "TransportLineId")
+                        .IsUnique();
+
+                    b.ToTable("FavoriteLines");
+                });
+
             modelBuilder.Entity("TransitFlow.API.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -183,6 +210,39 @@ namespace TransitFlow.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("TransitFlow.API.Models.RecommendationFeedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUseful")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransportLineId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransportLineId");
+
+                    b.HasIndex("UserId", "TransportLineId")
+                        .IsUnique();
+
+                    b.ToTable("RecommendationFeedbacks");
                 });
 
             modelBuilder.Entity("TransitFlow.API.Models.Route", b =>
@@ -798,12 +858,50 @@ namespace TransitFlow.API.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("TransitFlow.API.Models.FavoriteLine", b =>
+                {
+                    b.HasOne("TransitFlow.API.Models.TransportLine", "TransportLine")
+                        .WithMany()
+                        .HasForeignKey("TransportLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TransitFlow.API.Models.User", "User")
+                        .WithMany("FavoriteLines")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TransportLine");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TransitFlow.API.Models.Notification", b =>
                 {
                     b.HasOne("TransitFlow.API.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TransitFlow.API.Models.RecommendationFeedback", b =>
+                {
+                    b.HasOne("TransitFlow.API.Models.TransportLine", "TransportLine")
+                        .WithMany()
+                        .HasForeignKey("TransportLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TransitFlow.API.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TransportLine");
 
                     b.Navigation("User");
                 });
@@ -1035,6 +1133,8 @@ namespace TransitFlow.API.Migrations
 
             modelBuilder.Entity("TransitFlow.API.Models.User", b =>
                 {
+                    b.Navigation("FavoriteLines");
+
                     b.Navigation("Subscriptions");
 
                     b.Navigation("Tickets");

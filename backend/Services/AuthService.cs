@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -48,7 +49,7 @@ public class AuthService : IAuthService
         admin.LastLoginAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
-        var token = GenerateJwtToken(admin.Username);
+        var token = GenerateJwtToken(admin.Username, role: "Administrator");
         var expiresAt = DateTime.UtcNow.AddMinutes(
             int.Parse(_configuration["Jwt:ExpirationMinutes"] ?? "60"));
 
@@ -60,23 +61,108 @@ public class AuthService : IAuthService
         };
     }
 
-    public string GenerateJwtToken(string username)
+    public async Task<LoginResponse?> UserLoginAsync(LoginRequest request)
+    {
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => (u.Username == request.Username || u.Email == request.Username) && u.IsActive);
+
+        if (user == null)
+        {
+            return null;
+        }
+
+        if (!VerifyPassword(request.Password, user.PasswordHash))
+        {
+            return null;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        var token = GenerateJwtToken(user.Username, user.Id);
+        var expiresAt = DateTime.UtcNow.AddMinutes(
+            int.Parse(_configuration["Jwt:ExpirationMinutes"] ?? "60"));
+
+        return new LoginResponse
+        {
+            Token = token,
+            Username = user.Username,
+            UserId = user.Id,
+            ExpiresAt = expiresAt
+        };
+    }
+
+    public async Task<RegisterResponse?> RegisterAsync(RegisterRequest request)
+    {
+        if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+        {
+            throw new InvalidOperationException("Username already exists");
+        }
+
+        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+        {
+            throw new InvalidOperationException("Email already exists");
+        }
+
+        var user = new Models.User
+        {
+            Username = request.Username.Trim(),
+            Email = request.Email.Trim().ToLower(),
+            PasswordHash = HashPassword(request.Password),
+            FirstName = string.IsNullOrWhiteSpace(request.FirstName) ? null : request.FirstName.Trim(),
+            LastName = string.IsNullOrWhiteSpace(request.LastName) ? null : request.LastName.Trim(),
+            PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim(),
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        var token = GenerateJwtToken(user.Username, user.Id);
+        var expiresAt = DateTime.UtcNow.AddMinutes(
+            int.Parse(_configuration["Jwt:ExpirationMinutes"] ?? "60"));
+
+        return new RegisterResponse
+        {
+            UserId = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            Token = token,
+            ExpiresAt = expiresAt
+        };
+    }
+
+    public string GenerateJwtToken(string username, int? userId = null, string? role = null)
     {
         var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured"));
         var issuer = _configuration["Jwt:Issuer"] ?? "TransitFlowAPI";
         var audience = _configuration["Jwt:Audience"] ?? "TransitFlowUsers";
         var expirationMinutes = int.Parse(_configuration["Jwt:ExpirationMinutes"] ?? "60");
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.NameIdentifier, username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        if (userId.HasValue)
+        {
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()));
+        }
+        else
+        {
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, username));
+        }
+
+        if (!string.IsNullOrEmpty(role))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims),
+            Subject = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme),
             Expires = DateTime.UtcNow.AddMinutes(expirationMinutes),
             Issuer = issuer,
             Audience = audience,

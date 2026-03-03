@@ -9,10 +9,12 @@ namespace TransitFlow.API.Services;
 public class NotificationService : INotificationService
 {
     private readonly ApplicationDbContext _context;
+    private readonly IRabbitMQService _rabbitMQService;
 
-    public NotificationService(ApplicationDbContext context)
+    public NotificationService(ApplicationDbContext context, IRabbitMQService rabbitMQService)
     {
         _context = context;
+        _rabbitMQService = rabbitMQService;
     }
 
     public async Task<List<NotificationDto>> GetAllAsync(
@@ -151,6 +153,16 @@ public class NotificationService : INotificationService
             _context.Notifications.AddRange(notifications);
             await _context.SaveChangesAsync();
 
+            foreach (var notification in notifications)
+            {
+                _rabbitMQService.PublishNotificationCreated(
+                    notification.Id,
+                    notification.Title,
+                    notification.Message,
+                    notification.Type,
+                    notification.UserId);
+            }
+
             var firstNotification = notifications.First();
             return new NotificationDto
             {
@@ -179,6 +191,13 @@ public class NotificationService : INotificationService
 
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
+
+            _rabbitMQService.PublishNotificationCreated(
+                notification.Id,
+                notification.Title,
+                notification.Message,
+                notification.Type,
+                notification.UserId);
 
             var user = notification.UserId.HasValue
                 ? await _context.Users.FindAsync(notification.UserId.Value)

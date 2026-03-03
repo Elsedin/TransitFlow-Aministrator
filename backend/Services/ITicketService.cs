@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using TransitFlow.API.DTOs;
 
 namespace TransitFlow.API.Services;
@@ -9,7 +10,9 @@ public interface ITicketService
         string? status = null,
         int? ticketTypeId = null,
         DateTime? dateFrom = null,
-        DateTime? dateTo = null);
+        DateTime? dateTo = null,
+        int? userId = null);
     Task<TicketDto?> GetByIdAsync(int id);
     Task<TicketMetricsDto> GetMetricsAsync();
+    Task<TicketDto> PurchaseAsync(PurchaseTicketDto dto, int userId);
 }
