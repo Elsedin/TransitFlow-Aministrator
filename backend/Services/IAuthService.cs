@@ -5,5 +5,7 @@ namespace TransitFlow.API.Services;
 public interface IAuthService
 {
     Task<LoginResponse?> LoginAsync(LoginRequest request);
-    string GenerateJwtToken(string username);
+    Task<LoginResponse?> UserLoginAsync(LoginRequest request);
+    Task<RegisterResponse?> RegisterAsync(RegisterRequest request);
+    string GenerateJwtToken(string username, int? userId = null, string? role = null);
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TransitFlow.API.DTOs;
 using TransitFlow.API.Services;
 
@@ -11,10 +12,12 @@ namespace TransitFlow.API.Controllers;
 public class TicketsController : ControllerBase
 {
     private readonly ITicketService _ticketService;
+    private readonly IUserService _userService;
 
-    public TicketsController(ITicketService ticketService)
+    public TicketsController(ITicketService ticketService, IUserService userService)
     {
         _ticketService = ticketService;
+        _userService = userService;
     }
 
     [HttpGet("metrics")]
@@ -32,7 +35,19 @@ public class TicketsController : ControllerBase
         [FromQuery] DateTime? dateFrom = null,
         [FromQuery] DateTime? dateTo = null)
     {
-        var tickets = await _ticketService.GetAllAsync(search, status, ticketTypeId, dateFrom, dateTo);
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        int? userId = null;
+        
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var parsedUserId))
+        {
+            var isAdmin = User.IsInRole("Administrator");
+            if (!isAdmin)
+            {
+                userId = parsedUserId;
+            }
+        }
+
+        var tickets = await _ticketService.GetAllAsync(search, status, ticketTypeId, dateFrom, dateTo, userId);
         return Ok(tickets);
     }
 
@@ -47,5 +62,29 @@ public class TicketsController : ControllerBase
         }
 
         return Ok(ticket);
+    }
+
+    [HttpPost("purchase")]
+    public async Task<ActionResult<TicketDto>> Purchase([FromBody] PurchaseTicketDto dto)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new { message = "User not authenticated or user ID not found." });
+        }
+
+        try
+        {
+            var ticket = await _ticketService.PurchaseAsync(dto, userId);
+            return Ok(ticket);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while purchasing the ticket", error = ex.Message });
+        }
     }
 }

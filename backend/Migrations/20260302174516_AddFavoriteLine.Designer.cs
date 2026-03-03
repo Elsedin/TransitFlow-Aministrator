@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TransitFlow.API.Data;
 
@@ -11,9 +12,11 @@ using TransitFlow.API.Data;
 namespace TransitFlow.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302174516_AddFavoriteLine")]
+    partial class AddFavoriteLine
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,9 +160,14 @@ namespace TransitFlow.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TransportLineId");
+
+                    b.HasIndex("UserId1");
 
                     b.HasIndex("UserId", "TransportLineId")
                         .IsUnique();
@@ -210,39 +218,6 @@ namespace TransitFlow.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("TransitFlow.API.Models.RecommendationFeedback", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsUseful")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("TransportLineId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TransportLineId");
-
-                    b.HasIndex("UserId", "TransportLineId")
-                        .IsUnique();
-
-                    b.ToTable("RecommendationFeedbacks");
                 });
 
             modelBuilder.Entity("TransitFlow.API.Models.Route", b =>
@@ -867,10 +842,14 @@ namespace TransitFlow.API.Migrations
                         .IsRequired();
 
                     b.HasOne("TransitFlow.API.Models.User", "User")
-                        .WithMany("FavoriteLines")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("TransitFlow.API.Models.User", null)
+                        .WithMany("FavoriteLines")
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("TransportLine");
 
@@ -883,25 +862,6 @@ namespace TransitFlow.API.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TransitFlow.API.Models.RecommendationFeedback", b =>
-                {
-                    b.HasOne("TransitFlow.API.Models.TransportLine", "TransportLine")
-                        .WithMany()
-                        .HasForeignKey("TransportLineId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TransitFlow.API.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TransportLine");
 
                     b.Navigation("User");
                 });

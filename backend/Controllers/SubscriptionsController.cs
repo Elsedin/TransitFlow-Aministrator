@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TransitFlow.API.DTOs;
 using TransitFlow.API.Services;
 
@@ -28,11 +29,17 @@ public class SubscriptionsController : ControllerBase
     public async Task<ActionResult<List<SubscriptionDto>>> GetAll(
         [FromQuery] string? search = null,
         [FromQuery] string? status = null,
-        [FromQuery] int? userId = null,
         [FromQuery] DateTime? dateFrom = null,
         [FromQuery] DateTime? dateTo = null,
         [FromQuery] string? sortBy = null)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        int? userId = null;
+        if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+
         var subscriptions = await _subscriptionService.GetAllAsync(search, status, userId, dateFrom, dateTo, sortBy);
         return Ok(subscriptions);
     }
@@ -53,6 +60,31 @@ public class SubscriptionsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<SubscriptionDto>> Create([FromBody] CreateSubscriptionDto dto)
     {
+        var isAdmin = User.IsInRole("Administrator");
+        
+        if (!isAdmin)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var authenticatedUserId))
+            {
+                return Unauthorized(new { message = "User not authenticated or user ID not found." });
+            }
+            
+            dto.UserId = authenticatedUserId;
+        }
+        else
+        {
+            if (dto.UserId <= 0)
+            {
+                return BadRequest(new { message = "User ID must be provided and valid when creating subscription for another user." });
+            }
+        }
+        
+        if (dto.UserId <= 0)
+        {
+            return BadRequest(new { message = "User ID must be provided and valid." });
+        }
+
         try
         {
             var subscription = await _subscriptionService.CreateAsync(dto);
@@ -89,6 +121,30 @@ public class SubscriptionsController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "An error occurred while updating the subscription", error = ex.Message });
+        }
+    }
+
+    [HttpPost("{id}/cancel")]
+    public async Task<ActionResult<SubscriptionDto>> Cancel(int id)
+    {
+        try
+        {
+            var subscription = await _subscriptionService.CancelAsync(id);
+            
+            if (subscription == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(subscription);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while cancelling the subscription", error = ex.Message });
         }
     }
 
