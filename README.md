@@ -24,7 +24,11 @@ Kod u ovom repozitoriju je **usklađen** sa backendom, admin aplikacijom i worke
 
 ## Preporuka
 
-Za razvoj, testiranje i evaluaciju kompletnog seminarskog rada (desktop + mobile + backend + worker), koristiti glavni repozitorij:
+Za razvoj, testiranje i evaluaciju kompletnog seminarskog rada koristiti glavni repozitorij koji uključuje:
+- Desktop aplikaciju (admin frontend)
+- Mobilnu aplikaciju (user mobile)
+- Backend API
+- Worker servis
 
-`TransitFlow`
+Naziv repozitorija: `TransitFlow`
 
